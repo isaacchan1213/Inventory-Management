@@ -1,14 +1,14 @@
 'use client'
-import Image from "next/image";
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import {firestore} from '@/firebase'
-import { Box, Modal, Typography, Stack, TextField, Button } from '@mui/material'
+import { Box, Modal, Typography, Stack, TextField, Button, Autocomplete } from '@mui/material'
 import { query, getDocs, collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function Home() {
     const [inventory, setInventory] = useState([])
     const [open, setOpen] = useState(false)
     const [itemName, setItemName] = useState([])
+    const [inputValue, setInputValue] = useState('') 
 
     const updateInventory =  async  () => {
       const snapshot = query(collection(firestore, 'inventory'))
@@ -55,6 +55,14 @@ export default function Home() {
       updateInventory()
     }, [])
 
+    const handleInputChange = (event, newInputValue) => {
+      setInputValue(newInputValue);
+    };
+
+    const filteredInventory = inventory.filter(item =>
+      item.name.toLowerCase().includes(inputValue.toLowerCase())
+    );
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -95,25 +103,71 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
-      <Button variant="contained" onClick={() => {
-        handleOpen()
-      }}>
-        Add New Item
-      </Button>
-      <Box border="1px solid #333">
-        <Box width="800px" height="100px" bgcolor="#ADD8E6" display="flex" alignItems="center" justifyContent="center">
-          <Typography variant="h2" color="#333">
+      
+      <Stack width="100%" spacing={2} direction="row" display="flex" justifyContent="center">
+        <Button variant="contained" onClick={() => {
+          handleOpen()
+        }}>
+          Add New Item
+        </Button>
+        <Autocomplete
+          sx={{ width: '300px' }}
+          id="free-solo-demo"
+          freeSolo
+          options={inventory.map((option) => option.name)}
+          renderInput={(params) => <TextField {...params} label="Search for inventory" />}
+          inputValue={inputValue}
+          onInputChange={handleInputChange}
+        />
+      </Stack>
+
+      <Box 
+        sx={{
+          border:"1px solid #333",
+          width: {
+              xs: 350,
+              md: 800,
+          }, 
+        }}>
+        <Box width="100%" height="100px" bgcolor="#ADD8E6" display="flex" alignItems="center" justifyContent="center">
+          <Typography 
+            sx={{
+              variant: "h2",
+              color: "#333",
+              fontSize: {
+                xs: 24,
+                md: 40,
+              }
+          }}>
             Inventory Items
           </Typography>
         </Box>
-      <Stack width="800px" height="300px" spacing={2} overflow="auto">
-        {inventory.map(({name, quantity}) => (
-            <Box key={name} width="100%" minHeight="150px" display="flex" alignItems="center" justifyContent="space-between" bgColor="#f0f0f0" padding={5}>
-              <Typography variant="h3" color="#333" textAlign="center">
+      <Stack width="100%" height="300px" spacing={2} overflow="auto"> 
+        {filteredInventory.map(({name, quantity}) => (
+            <Box key={name} width="100%" minHeight="150px" display="flex" alignItems="center" justifyContent="space-between" bgcolor="#f0f0f0" padding={2}>
+              <Typography 
+                sx={{
+                  variant:"h3",
+                  color:"#333",
+                  textAlign:"center",
+                  fontSize: {
+                    xs: 25,
+                    md: 40,
+                  }
+                }}>
                 {name.charAt(0).toUpperCase() + name.slice(1)}
               </Typography>
-              <Typography variant="h3" color="#333" textAlign="center">
-                {quantity}
+              <Typography 
+                sx={{
+                  variant:"h3",
+                  color:"#333",
+                  textAlign:"center",
+                  fontSize: {
+                    xs: 25,
+                    md: 40,
+                  }
+                }}>
+                  {quantity}
               </Typography>
               <Stack direction="row" spacing={2}>
                 <Button variant="contained" onClick={() => {
