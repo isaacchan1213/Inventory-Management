@@ -1,7 +1,7 @@
 'use client'
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect} from 'react'
 import {firestore} from '@/firebase'
-import { Box, Modal, Typography, Stack, TextField, Button, Autocomplete } from '@mui/material'
+import { TextField, Autocomplete } from '@mui/material'
 import { query, getDocs, collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function Home() {
@@ -67,49 +67,47 @@ export default function Home() {
     const handleClose = () => setOpen(false);
 
     return (
-    <Box width="100vw" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" gap={2}>
-      <Modal open={open} onClose={handleClose}>
-        <Box 
-          position="absolute" 
-          top="50%" left="50%" 
-          width={400} bgcolor="white" 
-          border="2px solid #999" 
-          boxShadow={24} 
-          p={4} 
-          display="flex"
-          flexDirection="column"
-          gap={3}
-          sx={{
-            transform: "translate(-50%, -50%)" 
-          }}
-        >
-          <Typography variant="h6">Add Item</Typography>
-          <Stack width="100%" direction="row" spacing={2}>
-            <TextField
-              variant="outlined"
-              fullWidth
+    <div className="w-[100vw] h-[100vh] flex flex-col justify-center items-center gap-2">
+      <div className="relative">
+      {open && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
+            <h2 className="text-lg font-semibold mb-4">Add Item</h2>
+            <div className="flex gap-2 mb-4">
+            <input
+              type="text"
               value={itemName}
-              onChange={(e) => {
-                setItemName(e.target.value)
-              }}
+              onChange={(e) => setItemName(e.target.value)}
+              className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <Button variant="outlined" onClick={() => {
-              addItem(itemName)
-              setItemName('')
-              handleClose()
-            }}>
-              Add
-            </Button>
-          </Stack>
-        </Box>
-      </Modal>
+              <button
+                onClick={() => {
+                  addItem(itemName);
+                  setItemName('');
+                  handleClose();
+                }}
+                className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+              >
+                Add
+              </button>
+            </div>
+            <button
+              onClick={handleClose}
+              className="bg-red-500 text-white w-full mt-2 rounded hover:shadow-m hover:bg-red-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
       
-      <Stack width="100%" spacing={2} direction="row" display="flex" justifyContent="center">
-        <Button variant="contained" onClick={() => {
+      <div className='w-full space-x-2 flex flex-row justify-center'>
+        <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
           handleOpen()
         }}>
-          Add New Item
-        </Button>
+          <p className='text-[14px]'>Add New Item</p>
+        </button>
         <Autocomplete
           sx={{ width: '300px' }}
           id="free-solo-demo"
@@ -119,72 +117,39 @@ export default function Home() {
           inputValue={inputValue}
           onInputChange={handleInputChange}
         />
-      </Stack>
+      </div>
 
-      <Box 
-        sx={{
-          border:"1px solid #333",
-          width: {
-              xs: 350,
-              md: 800,
-          }, 
-        }}>
-        <Box width="100%" height="100px" bgcolor="#ADD8E6" display="flex" alignItems="center" justifyContent="center">
-          <Typography 
-            sx={{
-              variant: "h2",
-              color: "#333",
-              fontSize: {
-                xs: 24,
-                md: 40,
-              }
-          }}>
-            Inventory Items
-          </Typography>
-        </Box>
-      <Stack width="100%" height="300px" spacing={2} overflow="auto"> 
-        {filteredInventory.map(({name, quantity}) => (
-            <Box key={name} width="100%" minHeight="150px" display="flex" alignItems="center" justifyContent="space-between" bgcolor="#f0f0f0" padding={2}>
-              <Typography 
-                sx={{
-                  variant:"h3",
-                  color:"#333",
-                  textAlign:"center",
-                  fontSize: {
-                    xs: 25,
-                    md: 40,
-                  }
-                }}>
+      <div className="border border-gray-800 w-[350px] md:w-[800px]">
+        <div className="w-full h-[100px] bg-[#ADD8E6] flex items-center justify-center">
+          <h2 className="text-[#333] text-[24px] md:text-[40px]">
+              Inventory Items
+          </h2>
+        </div>
+        <div className="w-full h-[400px] overflow-auto flex flex-col gap-4"> 
+          {filteredInventory.map(({name, quantity}) => (
+            <div key={name} className="w-full min-h-[150px] flex items-center justify-between bg-[#f0f0f0] p-2">
+              <h3 className="text-[#333] text-[25px] md:text-[40px] text-center">
                 {name.charAt(0).toUpperCase() + name.slice(1)}
-              </Typography>
-              <Typography 
-                sx={{
-                  variant:"h3",
-                  color:"#333",
-                  textAlign:"center",
-                  fontSize: {
-                    xs: 25,
-                    md: 40,
-                  }
-                }}>
-                  {quantity}
-              </Typography>
-              <Stack direction="row" spacing={2}>
-                <Button variant="contained" onClick={() => {
-                  addItem(name)
-                }}>
-                  Add
-                </Button>
-                <Button variant="contained" onClick={() => {
-                  removeItem(name)
-                }}>
-                  Remove
-                </Button>
-              </Stack>
-            </Box>
-          ))}
-      </Stack>
-      </Box>
-    </Box>
+              </h3>
+              <h3 className="text-[#333] text-[25px] md:text-[40px] text-center">
+                {quantity}
+              </h3>
+              <div className='flex flex-row gap-2'>
+                  <button className='bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
+                    addItem(name)
+                  }}>
+                    Add
+                  </button>
+                  <button className='bg-red-600 text-white py-2 px-4 rounded shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400' onClick={() => {
+                    removeItem(name)
+                  }}>
+                    Remove
+                  </button>
+              </div>
+            </div>
+            ))}
+        </div>
+      </div>
+    </div>
   )
 }
