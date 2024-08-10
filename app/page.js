@@ -56,7 +56,7 @@ const Login = () => {
             <button type='submit' className='w-[60%] h-[40px] bg-green-500 rounded-lg text-white'>Log In</button>
           </div>
           <div className='flex flex-row justify-center gap-8 text-xs'>
-            <Link className='text-blue-500 underline' href='/signup'>Don't have an account?</Link>
+            <Link className='text-blue-500 underline' href='/signup'>Don&apos;t have an account?</Link>
             <a onClick={handlePasswordReset} href="#" className='text-blue-500 underline'>Forgot your password?</a>
           </div>
         </form>
