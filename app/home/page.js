@@ -10,6 +10,7 @@ export default function Home() {
     const [inventory, setInventory] = useState([])
     const [open, setOpen] = useState(false)
     const [itemName, setItemName] = useState([])
+    const [itemCalories, setItemCalories] = useState([])
     const [inputValue, setInputValue] = useState('') 
     const [loading, setLoading] = useState(true);
     const router = useRouter(); // Router instance for redirection
@@ -47,7 +48,7 @@ export default function Home() {
       }
     }
 
-    const addItem = async (item) => {
+    const addItem = async (item, cals) => {
       const userId = auth.currentUser?.uid; // Get the current user ID
       if (!userId) return; // Exit if no user is authenticated
 
@@ -56,18 +57,19 @@ export default function Home() {
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-            const {quantity} = docSnap.data()
-            await setDoc(docRef, {quantity: quantity + 1})
+            const quantity = docSnap.data().quantity
+            const calories = Number(docSnap.data().calories)
+            await setDoc(docRef, {quantity: quantity + 1, calories: calories + Number(cals)})
           } else {
-            await setDoc(docRef, {quantity: 1})
+            await setDoc(docRef, {quantity: 1, calories: Number(cals)})
           }
           await updateInventory()
       } catch(error) {
-        console.error('Error adding item:', error);
+        console.error('Error adding item or updating cals:', error);
       }
     }
 
-    const removeItem = async (item) => {
+    const removeItem = async (item, cals) => {
       const userId = auth.currentUser?.uid;
       if (!userId) return;
 
@@ -76,11 +78,11 @@ export default function Home() {
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-          const {quantity} = docSnap.data()
+          const {quantity, calories} = docSnap.data()
           if (quantity === 1) {
             await deleteDoc(docRef) 
           } else {
-            await setDoc(docRef, {quantity: quantity - 1})
+            await setDoc(docRef, {quantity: quantity - 1, calories: calories - Number(cals)})
           }
         }
         await updateInventory()
@@ -121,16 +123,41 @@ export default function Home() {
           <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
             <h2 className="text-lg font-semibold mb-4">Add Item</h2>
             <div className="flex gap-2 mb-4">
-            <input
-              type="text"
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-              className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              <input
+                type="text"
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+                placeholder='Food Name'
+                className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
+              />
+              <style>
+                {`
+                  input[type="number"]::-webkit-inner-spin-button,
+                  input[type="number"]::-webkit-outer-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                  }
+
+                  input[type="number"] {
+                    -moz-appearance: textfield;
+                  }
+                `}
+              </style>
+              <input
+                type="number"
+                value={itemCalories}
+                onChange={(e) => setItemCalories(e.target.value)}
+                placeholder='Calories'
+                className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[25%]"
+                inputMode="numeric"
+                min="0"
+                step="1"
+              />
               <button
                 onClick={() => {
-                  addItem(itemName);
+                  addItem(itemName, itemCalories);
                   setItemName('');
+                  setItemCalories('')
                   handleClose();
                 }}
                 className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
@@ -149,8 +176,8 @@ export default function Home() {
       )}
     </div>
       
-      <div className='w-full space-x-2 flex flex-row justify-center'>
-        <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
+      <div className='flex-col items-center gap-2 w-full space-x-2 flex sm:flex-row justify-center'>
+        <button className='h-full rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
           handleOpen()
         }}>
           <p className='text-[14px]'>Add New Item</p>
@@ -164,38 +191,45 @@ export default function Home() {
           inputValue={inputValue}
           onInputChange={handleInputChange}
         />
-
+      </div>
+      
+      <div className='absolute top-2 right-2'>
         <button
-          onClick={handleLogout}
-          className="rounded bg-red-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-red-700"
-        >
-          Logout
+            onClick={handleLogout}
+            className="rounded bg-red-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-red-700"
+          >
+            Logout
         </button>
       </div>
 
-      <div className="border border-gray-800 w-[350px] md:w-[800px]">
-        <div className="w-full h-[100px] bg-[#ADD8E6] flex items-center justify-center">
-          <h2 className="text-[#333] text-[24px] md:text-[40px]">
-              Inventory Items
+      <div className='border border-gray-800 w-[350px] md:w-[800px] rounded-md'>
+        <div className='w-full h-[100px] bg-[#a4b5fd] flex items-center justify-center rounded-md'>
+          <h2 className='text-[#333] text-[24px] md:text-[40px]'>
+              Start tracking your food now!
           </h2>
         </div>
-        <div className="w-full h-[400px] overflow-auto flex flex-col gap-4"> 
-          {filteredInventory.map(({name, quantity}) => (
-            <div key={name} className="w-full min-h-[150px] flex items-center justify-between bg-[#f0f0f0] p-2">
-              <h3 className="text-[#333] text-[25px] md:text-[40px] text-center">
-                {name.charAt(0).toUpperCase() + name.slice(1)}
-              </h3>
-              <h3 className="text-[#333] text-[25px] md:text-[40px] text-center">
-                {quantity}
-              </h3>
+        <div className='w-full h-[400px] overflow-auto flex flex-col gap-4 rounded-md'> 
+          {filteredInventory.map(({name, quantity, calories}) => (
+            <div key={name} className='w-full min-h-[150px] flex items-center justify-between bg-[#f0f0f0] p-2'>
+              <div className='flex flex-col items-start'>
+                <h3 className='text-[#333] text-[25px] md:text-[40px]'>
+                  {name.charAt(0).toUpperCase() + name.slice(1) + ':'}
+                </h3>
+                <h3 className='text-[#333] text-[25px] md:text-[40px] text-center w-full'>
+                  {quantity}
+                </h3>
+              </div>
+              <div className='text-[#333] text-[25px] md:text-[40px] text-center w-full'>
+                {calories + ' cals'}
+              </div>
               <div className='flex flex-row gap-2'>
                   <button className='bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
-                    addItem(name)
+                    addItem(name, calories)
                   }}>
                     Add
                   </button>
                   <button className='bg-red-600 text-white py-2 px-4 rounded shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400' onClick={() => {
-                    removeItem(name)
+                    removeItem(name, calories)
                   }}>
                     Remove
                   </button>
