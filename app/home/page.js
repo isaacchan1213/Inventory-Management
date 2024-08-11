@@ -5,7 +5,6 @@ import { auth, firestore } from '@/firebase'; // Ensure you import Firestore
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { TextField, Autocomplete } from '@mui/material'
 import { query, getDocs, collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
-import SemiCircleProgressBar from "react-progressbar-semicircle"
 import axios from 'axios';
 
 export default function Home() {
@@ -504,18 +503,27 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className='flex flex-col items-center gap-2 mb-[6rem]'>
+      <div className='flex flex-col items-center gap-1 mb-[6rem]'>
         <div className='relative w-[400px] h-[200px]'>
-          <SemiCircleProgressBar stroke='#2563eb' diameter={400} percentage={progressPercentage} className='absolute top-0 left-0'/>
-          {targetCal > 0 ? (
-            <div className='absolute top-[60%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl font-bold text-[#333]'>
-              {totalCalories}/{targetCal}
-            </div>
-          ) : (
-            <div className='absolute top-[60%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl font-bold text-[#333]'>
-              Input target calorie
-            </div>
-          )}
+          <div
+            role="progressbar"
+            aria-valuenow={progressPercentage}
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style={{ '--value': progressPercentage }}
+            className="absolute top-0 left-0 w-full h-full" 
+          />
+          <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
+            {targetCal > 0 ? (
+              <div className='text-xl font-bold text-[#333]'>
+                {totalCalories}/{targetCal}
+              </div>
+            ) : (
+              <div className='text-xl font-bold text-[#333]'>
+                Input target calorie
+              </div>
+            )}
+          </div>
         </div>
         <h2 className='font-semibold text-[35px]'>
           Progress
