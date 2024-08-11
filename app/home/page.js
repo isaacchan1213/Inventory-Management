@@ -177,7 +177,7 @@ export default function Home() {
                 Add
               </button>
             </div>
-            <p>Don't know the calories?</p>
+            <p>Don&apos;t know the calories?</p>
             <button
                   onClick={getAISuggestion} 
                   className="bg-green-600 text-white px-2 py-2 rounded border border-transparent hover:shadow-m hover:bg-green-700"
