@@ -11,7 +11,8 @@ export default function Home() {
     const [inventory, setInventory] = useState([])
     const [open, setOpen] = useState(false)
     const [itemName, setItemName] = useState('')
-    const [itemCalories, setItemCalories] = useState([])
+    const [initCalories, setInitCalories] = useState([])
+    const [itemCalorie, setItemCalorie] = useState([])
     const [inputValue, setInputValue] = useState('') 
     const [loading, setLoading] = useState(true);
     const router = useRouter(); // Router instance for redirection
@@ -50,6 +51,7 @@ export default function Home() {
     }
 
     const addItem = async (item, cals) => {
+      console.log('itemCalories', itemCalorie)
       const userId = auth.currentUser?.uid; // Get the current user ID
       if (!userId) return; // Exit if no user is authenticated
 
@@ -121,7 +123,7 @@ export default function Home() {
           const response = await axios.post('https://inventory-management-eta-lime.vercel.app/api/get-calories', {
               food: itemName
           });
-          setItemCalories(response.data.response || ''); 
+          setInitCalories(response.data.response || ''); 
       } catch (error) {
           console.error(error.response.data);
       }
@@ -157,8 +159,8 @@ export default function Home() {
               </style>
               <input
                 type="number"
-                value={itemCalories}
-                onChange={(e) => setItemCalories(e.target.value)}
+                value={initCalories}
+                onChange={(e) => { setInitCalories(e.target.value); setItemCalorie(e.target.value); }}
                 placeholder='Calories'
                 className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[25%]"
                 inputMode="numeric"
@@ -167,9 +169,9 @@ export default function Home() {
               />
               <button
                 onClick={() => {
-                  addItem(itemName, itemCalories);
+                  addItem(itemName, initCalories);
                   setItemName('');
-                  setItemCalories('')
+                  setInitCalories('')
                   handleClose();
                 }}
                 className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
@@ -243,12 +245,12 @@ export default function Home() {
               </div>
               <div className='flex flex-row gap-2'>
                   <button className='bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
-                    addItem(name, calories)
+                    addItem(name, itemCalorie)
                   }}>
                     Add
                   </button>
                   <button className='bg-red-600 text-white py-2 px-4 rounded shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400' onClick={() => {
-                    removeItem(name, calories)
+                    removeItem(name, itemCalorie)
                   }}>
                     Remove
                   </button>

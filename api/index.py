@@ -5,6 +5,7 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 import os
+import re
 
 load_dotenv()
 
@@ -43,7 +44,6 @@ def get_suggestions():
         response = chain.invoke({"text": user_message})
         response_content = response.content if hasattr(response, 'content') else "No response from model"
         
-        import re
         match = re.search(r'\b\d+\b', response_content.strip())
         if match:
             calories = int(match.group())
