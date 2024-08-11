@@ -5,11 +5,12 @@ import { auth, firestore } from '@/firebase'; // Ensure you import Firestore
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { TextField, Autocomplete } from '@mui/material'
 import { query, getDocs, collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import axios from 'axios';
 
 export default function Home() {
     const [inventory, setInventory] = useState([])
     const [open, setOpen] = useState(false)
-    const [itemName, setItemName] = useState([])
+    const [itemName, setItemName] = useState('')
     const [itemCalories, setItemCalories] = useState([])
     const [inputValue, setInputValue] = useState('') 
     const [loading, setLoading] = useState(true);
@@ -115,6 +116,17 @@ export default function Home() {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
+    const getAISuggestion = async () => {
+      try {
+          const response = await axios.post('https://inventory-management-eta-lime.vercel.app/api/get-calories', {
+              food: itemName
+          });
+          setItemCalories(response.data.response || ''); 
+      } catch (error) {
+          console.error(error.response.data);
+      }
+    };
+
     return (
     <div className="w-[100vw] h-[100vh] flex flex-col justify-center items-center gap-2">
       <div className="relative">
@@ -165,6 +177,13 @@ export default function Home() {
                 Add
               </button>
             </div>
+            <p>Don't know the calories?</p>
+            <button
+                  onClick={getAISuggestion} 
+                  className="bg-green-600 text-white px-2 py-2 rounded border border-transparent hover:shadow-m hover:bg-green-700"
+              >
+                  Get AI Suggestion
+            </button>
             <button
               onClick={handleClose}
               className="bg-red-500 text-white w-full mt-2 rounded hover:shadow-m hover:bg-red-700"
