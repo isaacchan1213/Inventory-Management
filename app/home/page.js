@@ -442,50 +442,70 @@ export default function Home() {
           Logout
       </button>
     </div>
-    <div className='w-[350px] md:w-[1200px] flex flex-row justify-center items-center gap-10'>
+    <div className='w-full xl:w-[1280px] flex flex-col-reverse md:flex-row justify-center items-center gap-10'>
       <div className='w-[80%] h-full flex flex-col gap-2'>
-        <div className='flex flex-row gap-2'>
-          <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
-            handleOpen()
-          }}>
-            <p className='text-[14px]'>Add New Item</p>
-          </button>
+        <div className='flex flex-col items-center md:flex-row gap-2 justify-center'>
+          <div className='flex flex-row gap-2 h-full'>
+            <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
+              handleOpen()
+            }}>
+              <p className='text-[14px]'>Add New Item</p>
+            </button>
+            <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
+              clearAllInventoryItems()
+            }}>
+              <p className='text-[14px]'>Clear</p>
+            </button>
+          </div>
           <Autocomplete
             sx={{ width: '300px' }}
             id="free-solo-demo"
             freeSolo
             options={inventory.map((option) => option.name)}
-            renderInput={(params) => <TextField {...params} label="Search for inventory" />}
+            renderInput={(params) => <TextField {...params} label="Search for food" />}
             inputValue={inputValue}
             onInputChange={handleInputChange}
           />
-          <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
-            clearAllInventoryItems()
-          }}>
-            <p className='text-[14px]'>Clear</p>
-          </button>
         </div>
-        <div className='border border-gray-800 rounded-md w-full'>
+        <div className='flex flex-col items-center gap-1 md:hidden'>
+          <div className='relative w-[200px] h-[100px]'>
+            <div
+              role="progressbar"
+              aria-valuenow={progressPercentage}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              style={{ '--value': progressPercentage }}
+              className="absolute top-0 left-0 w-full h-full" 
+            />
+            <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
+              {targetCal > 0 ? (
+                <div className='text-xl font-bold text-[#333]'>
+                  {totalCalories}/{targetCal}
+                </div>
+              ) : (
+                <div className='text-xl font-bold text-[#333]'>
+                  Input target calorie
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className='border border-gray-800 rounded-md w-full h-full'>
           <div className='w-full h-[100px] bg-[#a4b5fd] flex items-center justify-center rounded-md'>
             <h2 className='text-[#333] text-[24px] md:text-[30px] text-center'>
                 Start tracking your food now!
             </h2>
           </div>
-          <div className='w-full h-[400px] overflow-auto flex flex-col gap-4 rounded-md'> 
+          <div className='flex flex-col gap-2 lg:gap-4 rounded-md'> 
             {filteredInventory.map(({name, quantity, totalCalories}) => (
-              <div key={name} className='w-full min-h-[150px] flex items-center justify-between bg-[#f0f0f0] p-2'>
-                <div className='flex flex-col items-start'>
-                  <h3 className='text-[#333] text-[25px] md:text-[40px]'>
-                    {name.charAt(0).toUpperCase() + name.slice(1) + ':'}
-                  </h3>
-                  <h3 className='text-[#333] text-[25px] md:text-[40px] text-center w-full'>
-                    {quantity}
-                  </h3>
-                </div>
-                <div className='text-[#333] text-[25px] md:text-[40px] text-center w-full'>
+              <div key={name} className='w-full min-h-[100px] md:min-h-[150px] flex items-center justify-between bg-[#f0f0f0] p-2'>
+                <h3 className='flex-shrink-0 text-[#333] text-[25px] md:text-[25px] lg:text-[40px]'>
+                  {quantity === 1 ? name.charAt(0).toUpperCase() + name.slice(1) + ':' : quantity + ' ' + name.charAt(0).toUpperCase() + name.slice(1) + ':'}
+                </h3>    
+                <div className='text-[#333] text-[25px] md:text-[25px] lg:text-[40px] text-center w-full'>
                   {totalCalories + ' cals'}
                 </div>
-                <div className='flex flex-row gap-2'>
+                <div className='flex flex-col md:flex-row gap-2'>
                     <button className='bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
                       addItem(name)
                     }}>
@@ -502,8 +522,8 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className='flex flex-col items-center gap-1 mb-[6rem]'>
-        <div className='relative w-[400px] h-[200px]'>
+      <div className='hidden md:flex flex-col items-center gap-1'>
+        <div className='relative w-[300px] h-[150px] lg:w-[400px] lg:h-[200px]'>
           <div
             role="progressbar"
             aria-valuenow={progressPercentage}
