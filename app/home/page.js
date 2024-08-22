@@ -276,48 +276,57 @@ export default function Home() {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
             <h2 className="text-lg font-semibold mb-4">Add Item</h2>
-            <div className="flex gap-2 mb-4">
-              <input
-                type="text"
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-                placeholder='Food Name'
-                className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
-              />
-              <style>
-                {`
-                  input[type="number"]::-webkit-inner-spin-button,
-                  input[type="number"]::-webkit-outer-spin-button {
-                    -webkit-appearance: none;
-                    margin: 0;
-                  }
+            <div className='flex flex-col mb-4'>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                  placeholder='Food Name'
+                  maxLength={30}
+                  className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
+                />
+                <style>
+                  {`
+                    input[type="number"]::-webkit-inner-spin-button,
+                    input[type="number"]::-webkit-outer-spin-button {
+                      -webkit-appearance: none;
+                      margin: 0;
+                    }
 
-                  input[type="number"] {
-                    -moz-appearance: textfield;
-                  }
-                `}
-              </style>
-              <input
-                type="number"
-                value={initCalories}
-                onChange={(e) => { setInitCalories(e.target.value); setItemCalorie(e.target.value);}}
-                placeholder='Calories'
-                className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[25%]"
-                inputMode="numeric"
-                min="0"
-                step="1"
-              />
-              <button
-                onClick={() => {
-                  addInitItem(itemName, initCalories);
-                  setItemName('');
-                  setInitCalories('')
-                  handleClose();
-                }}
-                className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
-              >
-                Add
-              </button>
+                    input[type="number"] {
+                      -moz-appearance: textfield;
+                    }
+                  `}
+                </style>
+                <input
+                  type="number"
+                  value={initCalories}
+                  onChange={(e) => { const value = e.target.value;
+                    if (value.length <= 5) { 
+                      setInitCalories(value);
+                      setItemCalorie(value);
+                    }
+                  }}
+                  placeholder='Calories'
+                  className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[25%]"
+                  inputMode="numeric"
+                  min="0"
+                  step="1"
+                />
+                <button
+                  onClick={() => {
+                    addInitItem(itemName, initCalories);
+                    setItemName('');
+                    setInitCalories('')
+                    handleClose();
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+                >
+                  Add
+                </button>
+              </div>
+              <p className="text-gray-600">{itemName.length}/{30} characters</p>
             </div>
             <p>Don&apos;t know the calories?</p>
             <button
@@ -359,7 +368,11 @@ export default function Home() {
                 <input
                     type="number"
                     value={initTargetCal}
-                    onChange={(e) => setInitTargetCal(e.target.value)}
+                    onChange={(e) => { const value = e.target.value;
+                      if (value.length <= 5) { 
+                        setInitTargetCal(value)
+                      }
+                    }}
                     placeholder='Target Calories'
                     className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
                     inputMode="numeric"
@@ -420,7 +433,11 @@ export default function Home() {
                 <input
                     type="number"
                     value={initTargetCal}
-                    onChange={(e) => setInitTargetCal(e.target.value)}
+                    onChange={(e) => { const value = e.target.value;
+                      if (value.length <= 5) { 
+                        setInitTargetCal(value)
+                      }
+                    }}
                     placeholder='Target Calories'
                     className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
                     inputMode="numeric"
@@ -500,7 +517,7 @@ export default function Home() {
             </div>
             <div className='flex-1 overflow-y-auto flex flex-col gap-2 lg:gap-4 rounded-md'> 
               {filteredInventory.map(({name, quantity, totalCalories}) => (
-                <div key={name} className='w-full h-full flex items-center justify-between bg-[#f0f0f0] px-4 py-10'>
+                <div key={name} className='w-full flex items-center justify-between bg-[#f0f0f0] px-4 py-10'>
                   <div className='flex-shrink-0 max-w-[30%]'>
                     <h3 className='text-[#333] text-[25px] md:text-[25px] lg:text-[30px] xl:text-[40px] whitespace-normal break-words'>
                       {quantity === 1 ? name.charAt(0).toUpperCase() + name.slice(1) + ':' : quantity + ' ' + name.charAt(0).toUpperCase() + name.slice(1) + ':'}
