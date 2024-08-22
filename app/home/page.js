@@ -245,7 +245,7 @@ export default function Home() {
 
     const getAISuggestion = async () => {
       try {
-          const response = await axios.post('https://inventory-management-eta-lime.vercel.app/api/get-calories', {
+          const response = await axios.post('https://meal-prep-ten.vercel.app/api/get-calories', {
               food: itemName
           });
           setInitCalories(response.data.response || ''); 
