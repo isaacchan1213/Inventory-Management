@@ -255,7 +255,22 @@ export default function Home() {
     };
     
     return (
-    <div className="w-[100vw] h-[100vh] flex flex-col justify-center items-center gap-4">
+    <div className='flex flex-col items-center w-full h-full overflow-y-auto'>
+      <div className='sticky top-0 w-full p-2 flex flex-row justify-between z-10 bg-[#FFF8DC]'>
+        <button
+            onClick={handleOpen2}
+            className="rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700"
+          >
+            Settings
+        </button>
+        <button
+            onClick={handleLogout}
+            className="rounded bg-red-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-red-700"
+          >
+            Logout
+        </button>
+      </div>
+
       <div className="relative">
       {open && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
@@ -320,155 +335,199 @@ export default function Home() {
           </div>
         </div>
       )}
-    </div>
+      </div>
 
-    <div className="relative">
-      {open2 && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
-            <h2 className="text-lg font-semibold mb-4">Settings</h2>
-            <div className="flex gap-2 mb-4">
-              <style>
-                  {`
-                    input[type="number"]::-webkit-inner-spin-button,
-                    input[type="number"]::-webkit-outer-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                    }
+      <div className="relative">
+        {open2 && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
+              <h2 className="text-lg font-semibold mb-4">Settings</h2>
+              <div className="flex gap-2 mb-4">
+                <style>
+                    {`
+                      input[type="number"]::-webkit-inner-spin-button,
+                      input[type="number"]::-webkit-outer-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                      }
 
-                    input[type="number"] {
-                      -moz-appearance: textfield;
-                    }
-                  `}
-              </style>
-              <input
-                  type="number"
-                  value={initTargetCal}
-                  onChange={(e) => setInitTargetCal(e.target.value)}
-                  placeholder='Target Calories'
-                  className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
-                  inputMode="numeric"
-                  min="0"
-                  step="1"
-              />
+                      input[type="number"] {
+                        -moz-appearance: textfield;
+                      }
+                    `}
+                </style>
+                <input
+                    type="number"
+                    value={initTargetCal}
+                    onChange={(e) => setInitTargetCal(e.target.value)}
+                    placeholder='Target Calories'
+                    className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
+                    inputMode="numeric"
+                    min="0"
+                    step="1"
+                />
+                <button
+                  onClick={() => {
+                    addTargetCal(initTargetCal);
+                    setTargetCal(initTargetCal)
+                    handleClose2();
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+                >
+                  Set
+                </button>
+                <button
+                  onClick={() => {
+                    resetTarget();
+                    setInitTargetCal('')
+                    setTargetCal('')
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+                >
+                  Reset
+                </button>
+              </div>
               <button
-                onClick={() => {
-                  addTargetCal(initTargetCal);
-                  setTargetCal(initTargetCal)
-                  handleClose2();
-                }}
-                className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+                onClick={handleClose2}
+                className="bg-red-500 text-white w-full mt-2 rounded hover:shadow-m hover:bg-red-700"
               >
-                Set
-              </button>
-              <button
-                onClick={() => {
-                  resetTarget();
-                  setInitTargetCal('')
-                  setTargetCal('')
-                }}
-                className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
-              >
-                Reset
-              </button>
-            </div>
-            <button
-              onClick={handleClose2}
-              className="bg-red-500 text-white w-full mt-2 rounded hover:shadow-m hover:bg-red-700"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-
-    <div className="relative">
-      {open3 && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
-            <h2 className="text-lg font-semibold mb-4">Please set your target calories first</h2>
-            <div className="flex gap-2 mb-4">
-              <style>
-                  {`
-                    input[type="number"]::-webkit-inner-spin-button,
-                    input[type="number"]::-webkit-outer-spin-button {
-                      -webkit-appearance: none;
-                      margin: 0;
-                    }
-
-                    input[type="number"] {
-                      -moz-appearance: textfield;
-                    }
-                  `}
-              </style>
-              <input
-                  type="number"
-                  value={initTargetCal}
-                  onChange={(e) => setInitTargetCal(e.target.value)}
-                  placeholder='Target Calories'
-                  className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
-                  inputMode="numeric"
-                  min="0"
-                  step="1"
-              />
-              <button
-                onClick={() => {
-                  addTargetCal(initTargetCal);
-                  setTargetCal(initTargetCal)
-                  handleClose3();
-                }}
-                className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
-              >
-                Set
+                Close
               </button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-      
-    <div className='absolute top-0 w-full p-2 flex flex-row justify-between'>
-      <button
-          onClick={handleOpen2}
-          className="rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700"
-        >
-          Settings
-      </button>
-      <button
-          onClick={handleLogout}
-          className="rounded bg-red-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-red-700"
-        >
-          Logout
-      </button>
-    </div>
-    <div className='w-full xl:w-[1280px] flex flex-col-reverse md:flex-row justify-center items-center gap-10'>
-      <div className='w-[80%] h-full flex flex-col gap-2'>
-        <div className='flex flex-col items-center md:flex-row gap-2 justify-center'>
-          <div className='flex flex-row gap-2 h-full'>
-            <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
-              handleOpen()
-            }}>
-              <p className='text-[14px]'>Add New Item</p>
-            </button>
-            <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
-              clearAllInventoryItems()
-            }}>
-              <p className='text-[14px]'>Clear</p>
-            </button>
+        )}
+      </div>
+
+      <div className="relative">
+        {open3 && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
+              <h2 className="text-lg font-semibold mb-4">Please set your target calories first</h2>
+              <div className="flex gap-2 mb-4">
+                <style>
+                    {`
+                      input[type="number"]::-webkit-inner-spin-button,
+                      input[type="number"]::-webkit-outer-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                      }
+
+                      input[type="number"] {
+                        -moz-appearance: textfield;
+                      }
+                    `}
+                </style>
+                <input
+                    type="number"
+                    value={initTargetCal}
+                    onChange={(e) => setInitTargetCal(e.target.value)}
+                    placeholder='Target Calories'
+                    className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
+                    inputMode="numeric"
+                    min="0"
+                    step="1"
+                />
+                <button
+                  onClick={() => {
+                    addTargetCal(initTargetCal);
+                    setTargetCal(initTargetCal)
+                    handleClose3();
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+                >
+                  Set
+                </button>
+              </div>
+            </div>
           </div>
-          <Autocomplete
-            sx={{ width: '300px' }}
-            id="free-solo-demo"
-            freeSolo
-            options={inventory.map((option) => option.name)}
-            renderInput={(params) => <TextField {...params} label="Search for food" />}
-            inputValue={inputValue}
-            onInputChange={handleInputChange}
-          />
+        )}
+      </div>
+
+      <div className='flex flex-col items-center md:flex-row gap-2 justify-center mb-5'>
+        <div className='flex flex-row gap-2 h-full'>
+          <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
+            handleOpen()
+          }}>
+            <p className='text-[14px]'>Add New Item</p>
+          </button>
+          <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
+            clearAllInventoryItems()
+          }}>
+            <p className='text-[14px]'>Clear</p>
+          </button>
         </div>
-        <div className='flex flex-col items-center gap-1 md:hidden'>
-          <div className='relative w-[200px] h-[100px]'>
+        <Autocomplete
+          sx={{ width: '300px'}}
+          id="free-solo-demo"
+          freeSolo
+          options={inventory.map((option) => option.name)}
+          renderInput={(params) => <TextField {...params} label="Search for food" />}
+          inputValue={inputValue}
+          onInputChange={handleInputChange}
+        />
+      </div>
+
+      <div className='w-full h-full xl:w-[1280px] flex flex-col-reverse md:flex-row justify-center items-center gap-5 lg:gap-10'>
+        <div className='w-[80%] h-full md:w-full flex flex-col gap-2'>
+          <div className='flex flex-col items-center gap-1 md:hidden'>
+            <div className='relative w-[200px] h-[100px]'>
+              <div
+                role="progressbar"
+                aria-valuenow={progressPercentage}
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style={{ '--value': progressPercentage }}
+                className="absolute top-0 left-0 w-full h-full" 
+              />
+              <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
+                {targetCal > 0 ? (
+                  <div className='text-xl font-bold text-[#333]'>
+                    {totalCalories}/{targetCal}
+                  </div>
+                ) : (
+                  <div className='text-xl font-bold text-[#333]'>
+                    Input target calorie
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className='border border-gray-800 rounded-md w-full h-[500px] md:h-[600px] flex flex-col'>
+            <div className='w-full h-[125px] bg-[#a4b5fd] flex items-center justify-center rounded-md'>
+              <h2 className='text-[#333] text-[24px] md:text-[30px] text-center'>
+                  Start tracking your food now!
+              </h2>
+            </div>
+            <div className='flex-1 overflow-y-auto flex flex-col gap-2 lg:gap-4 rounded-md'> 
+              {filteredInventory.map(({name, quantity, totalCalories}) => (
+                <div key={name} className='w-full min-h-[100px] md:min-h-[150px] flex items-center justify-between bg-[#f0f0f0] p-2'>
+                  <div className='flex-shrink-0 max-w-[30%]'>
+                    <h3 className='text-[#333] text-[25px] md:text-[25px] lg:text-[30px] xl:text-[40px] whitespace-normal break-words'>
+                      {quantity === 1 ? name.charAt(0).toUpperCase() + name.slice(1) + ':' : quantity + ' ' + name.charAt(0).toUpperCase() + name.slice(1) + ':'}
+                    </h3>    
+                  </div>   
+                  <div className='text-[#333] text-[25px] md:text-[25px] lg:text-[40px] text-center w-full'>
+                    {totalCalories + ' cals'}
+                  </div>
+                  <div className='flex flex-col md:flex-row gap-2'>
+                      <button className='bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
+                        addItem(name)
+                      }}>
+                        Add
+                      </button>
+                      <button className='bg-red-600 text-white py-2 px-4 rounded shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400' onClick={() => {
+                        removeItem(name)
+                      }}>
+                        Remove
+                      </button>
+                  </div>
+                </div>
+                ))}
+            </div>
+          </div>
+        </div>
+        <div className='hidden md:flex flex-col items-center gap-1'>
+          <div className='relative w-[350px] h-[150px] lg:w-[400px] md:h-[200px]'>
             <div
               role="progressbar"
               aria-valuenow={progressPercentage}
@@ -489,66 +548,10 @@ export default function Home() {
               )}
             </div>
           </div>
-        </div>
-        <div className='border border-gray-800 rounded-md w-full h-full'>
-          <div className='w-full h-[100px] bg-[#a4b5fd] flex items-center justify-center rounded-md'>
-            <h2 className='text-[#333] text-[24px] md:text-[30px] text-center'>
-                Start tracking your food now!
-            </h2>
-          </div>
-          <div className='flex flex-col gap-2 lg:gap-4 rounded-md'> 
-            {filteredInventory.map(({name, quantity, totalCalories}) => (
-              <div key={name} className='w-full min-h-[100px] md:min-h-[150px] flex items-center justify-between bg-[#f0f0f0] p-2'>
-                <h3 className='flex-shrink-0 text-[#333] text-[25px] md:text-[25px] lg:text-[40px]'>
-                  {quantity === 1 ? name.charAt(0).toUpperCase() + name.slice(1) + ':' : quantity + ' ' + name.charAt(0).toUpperCase() + name.slice(1) + ':'}
-                </h3>    
-                <div className='text-[#333] text-[25px] md:text-[25px] lg:text-[40px] text-center w-full'>
-                  {totalCalories + ' cals'}
-                </div>
-                <div className='flex flex-col md:flex-row gap-2'>
-                    <button className='bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
-                      addItem(name)
-                    }}>
-                      Add
-                    </button>
-                    <button className='bg-red-600 text-white py-2 px-4 rounded shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400' onClick={() => {
-                      removeItem(name)
-                    }}>
-                      Remove
-                    </button>
-                </div>
-              </div>
-              ))}
-          </div>
-        </div>
-      </div>
-      <div className='hidden md:flex flex-col items-center gap-1'>
-        <div className='relative w-[300px] h-[150px] lg:w-[400px] lg:h-[200px]'>
-          <div
-            role="progressbar"
-            aria-valuenow={progressPercentage}
-            aria-valuemin="0"
-            aria-valuemax="100"
-            style={{ '--value': progressPercentage }}
-            className="absolute top-0 left-0 w-full h-full" 
-          />
-          <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
-            {targetCal > 0 ? (
-              <div className='text-xl font-bold text-[#333]'>
-                {totalCalories}/{targetCal}
-              </div>
-            ) : (
-              <div className='text-xl font-bold text-[#333]'>
-                Input target calorie
-              </div>
-            )}
-          </div>
-        </div>
-        <h2 className='font-semibold text-[35px]'>
-          Progress
-        </h2>
+          <h2 className='font-semibold text-[35px]'>
+            Progress
+          </h2>
       </div>
     </div>
   </div>
-  )
-}
+)}
