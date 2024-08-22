@@ -500,7 +500,7 @@ export default function Home() {
             </div>
             <div className='flex-1 overflow-y-auto flex flex-col gap-2 lg:gap-4 rounded-md'> 
               {filteredInventory.map(({name, quantity, totalCalories}) => (
-                <div key={name} className='w-full min-h-[100px] md:min-h-[150px] flex items-center justify-between bg-[#f0f0f0] p-2'>
+                <div key={name} className='w-full h-full flex items-center justify-between bg-[#f0f0f0] px-4 py-10'>
                   <div className='flex-shrink-0 max-w-[30%]'>
                     <h3 className='text-[#333] text-[25px] md:text-[25px] lg:text-[30px] xl:text-[40px] whitespace-normal break-words'>
                       {quantity === 1 ? name.charAt(0).toUpperCase() + name.slice(1) + ':' : quantity + ' ' + name.charAt(0).toUpperCase() + name.slice(1) + ':'}
