@@ -26,7 +26,7 @@ prompt = ChatPromptTemplate.from_messages([("system", system_message), ("human",
 chain = prompt | chat
 
 @app.route('/api/get-calories', methods=['POST'])
-def get_suggestions():
+def get_calories():
     data = request.json
     food = data.get('food', '')
 
@@ -51,6 +51,36 @@ def get_suggestions():
             calories = "Error: No valid number found in response"
 
         return jsonify({'response': calories})
+    except Exception as e:
+        print("Error:", e)  # Print error to console
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/get-protein', methods=['POST'])
+def get_protein():
+    data = request.json
+    food = data.get('food', '')
+
+    user_message = f"""Provide only the number of protein in grams for the following food item. No extra text, details, or explanations. No range. Just the number.
+                       Food: {food}
+                    """
+
+    messages = [
+        ("system", "You are educated in food science."),
+        ("user", user_message)
+    ]
+
+    try:
+        # Generate the response
+        response = chain.invoke({"text": user_message})
+        response_content = response.content if hasattr(response, 'content') else "No response from model"
+        
+        match = re.search(r'\b\d+\b', response_content.strip())
+        if match:
+            protein = int(match.group())
+        else:
+            protein = "Error: No valid number found in response"
+
+        return jsonify({'response': protein})
     except Exception as e:
         print("Error:", e)  # Print error to console
         return jsonify({"error": str(e)}), 500
