@@ -283,7 +283,7 @@ export default function Home() {
           const response = await axios.post('https://meal-prep-ten.vercel.app/api/get-calories', {
               food: itemName
           });
-          const response2 = await axios.post('https://meal-prep-ten.vercel.app/api/get-calories', {
+          const response2 = await axios.post('https://meal-prep-ten.vercel.app/api/get-protein', {
             food: itemName
         });
           setInitCalories(response.data.response || ''); 
