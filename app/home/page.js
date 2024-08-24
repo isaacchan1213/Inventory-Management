@@ -505,60 +505,64 @@ export default function Home() {
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
               <h2 className="text-lg font-semibold mb-4">Please set your target calories and protein first</h2>
-              <div className="flex gap-2 mb-4">
-                <style>
-                    {`
-                      input[type="number"]::-webkit-inner-spin-button,
-                      input[type="number"]::-webkit-outer-spin-button {
-                        -webkit-appearance: none;
-                        margin: 0;
-                      }
+              <div className='flex justify-center gap-6'>
+                <div className="flex flex-col gap-2 mb-4">
+                  <style>
+                      {`
+                        input[type="number"]::-webkit-inner-spin-button,
+                        input[type="number"]::-webkit-outer-spin-button {
+                          -webkit-appearance: none;
+                          margin: 0;
+                        }
 
-                      input[type="number"] {
-                        -moz-appearance: textfield;
-                      }
-                    `}
-                </style>
-                <input
-                    type="number"
-                    value={initTargetCal}
-                    onChange={(e) => { const value = e.target.value;
-                      if (value.length <= 5) { 
-                        setInitTargetCal(value)
-                      }
+                        input[type="number"] {
+                          -moz-appearance: textfield;
+                        }
+                      `}
+                  </style>
+                  <input
+                      type="number"
+                      value={initTargetCal}
+                      onChange={(e) => { const value = e.target.value;
+                        if (value.length <= 5) { 
+                          setInitTargetCal(value)
+                        }
+                      }}
+                      placeholder='Target Calories'
+                      className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      inputMode="numeric"
+                      min="0"
+                      step="1"
+                  />
+                  <input
+                      type="number"
+                      value={initTargetProtein}
+                      onChange={(e) => { const value = e.target.value;
+                        if (value.length <= 3) { 
+                          setInitTargetProtein(value)
+                        }
+                      }}
+                      placeholder='Target Protein (in grams)'
+                      className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      inputMode="numeric"
+                      min="0"
+                      step="1"
+                  />
+                </div>
+                <div>
+                  <button
+                    onClick={() => {
+                      addTargetCal(initTargetCal)
+                      setTargetCal(initTargetCal)
+                      addTargetProtein(initTargetProtein)
+                      setTargetProtein(initTargetProtein)
+                      handleClose3();
                     }}
-                    placeholder='Target Calories'
-                    className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
-                    inputMode="numeric"
-                    min="0"
-                    step="1"
-                />
-                <input
-                    type="number"
-                    value={initTargetProtein}
-                    onChange={(e) => { const value = e.target.value;
-                      if (value.length <= 3) { 
-                        setInitTargetProtein(value)
-                      }
-                    }}
-                    placeholder='Target Protein'
-                    className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
-                    inputMode="numeric"
-                    min="0"
-                    step="1"
-                />
-                <button
-                  onClick={() => {
-                    addTargetCal(initTargetCal)
-                    setTargetCal(initTargetCal)
-                    addTargetProtein(initTargetProtein)
-                    setTargetProtein(initTargetProtein)
-                    handleClose3();
-                  }}
-                  className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
-                >
-                  Set
-                </button>
+                    className="bg-blue-600 text-white px-6 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+                  >
+                    Set
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -632,12 +636,12 @@ export default function Home() {
                     </div>
                   ) : (
                     <div className='xs:text-xl font-bold text-[#333]'>
-                      Input target calorie
+                      Input target protein
                     </div>
                   )}
                 </div>
                 <h2 className='absolute inset-0 flex items-center justify-center top-[80%]'>
-                  Protein
+                  Protein (g)
                 </h2>
               </div>
             </div>
@@ -730,7 +734,7 @@ export default function Home() {
               </div>
             </div>
             <h2 className='font-semibold text-[35px]'>
-              Protein
+              Protein (g)
             </h2>
           </div>
         </div>
