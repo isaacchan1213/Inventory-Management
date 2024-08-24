@@ -257,8 +257,12 @@ export default function Home() {
 
     const totalProtein = filteredInventory.reduce((sum, item) => sum + item.totalProtein, 0);
     
-    const progressPercentage = targetCal > 0 
+    const caloriePercentage = targetCal > 0 
     ? ((totalCalories/targetCal)*100)
+    : 0;
+
+    const proteinPercentage = targetCal > 0 
+    ? ((totalProtein/targetProtein)*100)
     : 0;
 
     const handleOpen = () => setOpen(true);
@@ -583,19 +587,19 @@ export default function Home() {
 
       <div className='w-full h-full xl:w-[1280px] flex flex-col-reverse md:flex-row justify-center items-center gap-5 lg:gap-10'>
         <div className='w-[80%] h-full md:w-full flex flex-col gap-2'>
-          <div className='flex flex-col items-center gap-1 md:hidden'>
-            <div className='relative w-[200px] h-[100px]'>
+          <div className='flex justify-center items-center gap-2 md:hidden'>
+            <div className='relative w-[150px] h-[75px] xs:w-[200px] xs:h-[100px]'>
               <div
                 role="progressbar"
-                aria-valuenow={progressPercentage}
+                aria-valuenow={caloriePercentage}
                 aria-valuemin="0"
                 aria-valuemax="100"
-                style={{ '--value': progressPercentage }}
+                style={{ '--value': caloriePercentage }}
                 className="absolute top-0 left-0 w-full h-full" 
               />
               <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
                 {targetCal > 0 ? (
-                  <div className='text-xl font-bold text-[#333]'>
+                  <div className='xs:text-xl font-bold text-[#333]'>
                     {totalCalories}/{targetCal}
                   </div>
                 ) : (
@@ -603,9 +607,36 @@ export default function Home() {
                     Input target calorie
                   </div>
                 )}
+                <h2 className='absolute inset-0 flex items-center justify-center top-[80%]'>
+                  Calories
+                </h2>
               </div>
             </div>
-          </div>
+            <div className='relative w-[150px] h-[75px] xs:w-[200px] xs:h-[100px]'>
+              <div
+                  role="progressbar2"
+                  aria-valuenow={proteinPercentage}
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style={{ '--value': proteinPercentage }}
+                  className="absolute top-0 left-0 w-full h-full" 
+                />
+                <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
+                  {targetCal > 0 ? (
+                    <div className='text-xl font-bold text-[#333]'>
+                      {totalProtein}/{targetProtein}
+                    </div>
+                  ) : (
+                    <div className='xs:text-xl font-bold text-[#333]'>
+                      Input target calorie
+                    </div>
+                  )}
+                </div>
+                <h2 className='absolute inset-0 flex items-center justify-center top-[80%]'>
+                  Protein
+                </h2>
+              </div>
+            </div>
           <div className='border border-gray-800 rounded-md w-full h-[500px] md:h-[600px] flex flex-col'>
             <div className='w-full h-[125px] bg-[#a4b5fd] flex items-center justify-center rounded-md'>
               <h2 className='text-[#333] text-[24px] md:text-[30px] text-center'>
@@ -616,20 +647,25 @@ export default function Home() {
               {filteredInventory.map(({name, quantity, totalCalories, totalProtein, itemCalories, itemProtein}) => (
                 <div key={name} className='w-full flex items-center justify-between bg-[#f0f0f0] px-4 py-10'>
                   <div className='flex-shrink-0 max-w-[30%]'>
-                    <h3 className='text-[#333] text-[25px] md:text-[25px] lg:text-[30px] xl:text-[40px] whitespace-normal break-words'>
+                    <h3 className='text-[#333] text-[20px] xs:text-[25px] lg:text-[30px] xl:text-[40px] whitespace-normal break-words'>
                       {quantity === 1 ? name.charAt(0).toUpperCase() + name.slice(1) + ':' : quantity + ' ' + name.charAt(0).toUpperCase() + name.slice(1) + ':'}
                     </h3>    
                   </div>   
-                  <div className='text-[#333] text-[25px] md:text-[25px] lg:text-[40px] text-center w-full '>
-                    {totalCalories + ' cals' + ' ' + totalProtein + 'g'}
-                  </div>
+                  <div className='text-[#333] text-[20px] xs:text-[25px] md:text-[25px] lg:text-[40px] text-center w-full'>
+                    <div>
+                      {totalCalories + ' cals'}
+                    </div>
+                    <div>
+                      {totalProtein + ' g'}
+                    </div>
+                    </div>
                   <div className='flex flex-col md:flex-row gap-2'>
-                      <button className='bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
+                      <button className='bg-blue-600 text-white px-2 py-1 xs:px-4 xs:py-2 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
                         addInitItem(name, itemCalories, itemProtein)
                       }}>
                         Add
                       </button>
-                      <button className='bg-red-600 text-white py-2 px-4 rounded shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400' onClick={() => {
+                      <button className='bg-red-600 text-white px-2 py-1 xs:px-4 xs:py-2 rounded shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400' onClick={() => {
                         removeItem(name)
                       }}>
                         Remove
@@ -645,10 +681,10 @@ export default function Home() {
             <div className='relative w-[350px] h-[150px] lg:w-[400px] md:h-[200px]'>
               <div
                 role="progressbar"
-                aria-valuenow={progressPercentage}
+                aria-valuenow={caloriePercentage}
                 aria-valuemin="0"
                 aria-valuemax="100"
-                style={{ '--value': progressPercentage }}
+                style={{ '--value': caloriePercentage }}
                 className="absolute top-0 left-0 w-full h-full" 
               />
               <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
@@ -670,11 +706,11 @@ export default function Home() {
           <div className='hidden md:flex flex-col items-center gap-1'>
             <div className='relative w-[350px] h-[150px] lg:w-[400px] md:h-[200px]'>
               <div
-                role="progressbar"
-                aria-valuenow={progressPercentage}
+                role="progressbar2"
+                aria-valuenow={proteinPercentage}
                 aria-valuemin="0"
                 aria-valuemax="100"
-                style={{ '--value': progressPercentage }}
+                style={{ '--value': proteinPercentage }}
                 className="absolute top-0 left-0 w-full h-full" 
               />
               <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
