@@ -60,7 +60,8 @@ def get_protein():
     data = request.json
     food = data.get('food', '')
 
-    user_message = f"""Provide only the number of protein in grams for the following food item. No extra text, details, or explanations. No range. Just the number.
+    user_message = f"""Provide only the number of protein in grams for the following food item. If the food has no protein respond with only the number
+                    0. No extra text, details, or explanations. No range. Just the number.
                        Food: {food}
                     """
 
