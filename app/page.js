@@ -40,11 +40,11 @@ const Login = () => {
 
   return (
     <div className='flex flex-col justify-center items-center w-screen h-screen'>
-      <div className='w-screen h-screen flex flex-col justify-center items-center gap-2 mb-20 xs:mb-0'>
+      <div className='w-screen h-screen flex flex-col justify-center items-center gap-2 mb-32 xs:mb-0'>
         <h1 className='text-[24px] font-semibold'>Mindful Meals</h1>
         <p className='text-center'>Start monitoring your daily meals now!</p>
-        <div className='flex flex-col justify-center items-center w-full h-full max-w-[500px] max-h-[300px] border bg-white'>
-          <form onSubmit={handleSubmit} className='w-full h-full max-w-[400px] max-h-[200px] flex flex-col gap-4'>
+        <div className='flex flex-col justify-center items-center w-full h-full max-w-[400px] xs:max-w-[500px] max-h-[300px] border bg-white'>
+          <form onSubmit={handleSubmit} className='w-full h-full max-w-[350px] xs:max-w-[400px] max-h-[200px] flex flex-col gap-4'>
             <div className='email'>
               <p>Your email</p>
               <input className='border border-gray-600 w-full h-[40px] rounded-sm p-2' type='text' onChange={(e) => setEmail(e.target.value)} placeholder='e.g. example@gmail.com'></input>
