@@ -40,8 +40,8 @@ const Login = () => {
 
   return (
     <div className='flex flex-col justify-center items-center w-full h-screen gap-2'>
-      <h1 className='text-[24px] font-semibold'>Meal Prep</h1>
-      <p className='text-center'>Start monitoring your calories now!</p>
+      <h1 className='text-[24px] font-semibold'>Mindful Meals</h1>
+      <p className='text-center'>Start monitoring your daily meals now!</p>
       <div className='flex flex-col justify-center items-center w-full h-full max-w-[500px] max-h-[300px] border bg-white'>
         <form onSubmit={handleSubmit} className='w-full h-full max-w-[400px] max-h-[200px] flex flex-col gap-4'>
           <div className='email'>

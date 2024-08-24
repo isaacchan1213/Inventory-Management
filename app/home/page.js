@@ -283,10 +283,10 @@ export default function Home() {
     
     const getAISuggestion = async () => {
       try {
-          const response = await axios.post('https://meal-prep-ten.vercel.app/api/get-calories', {
+          const response = await axios.post('https://mindful-meals.vercel.app/api/get-calories', {
               food: itemName
           });
-          const response2 = await axios.post('https://meal-prep-ten.vercel.app/api/get-protein', {
+          const response2 = await axios.post('https://mindful-meals.vercel.app/api/get-protein', {
             food: itemName
           });
           setInitCalories(Number(response.data.response) ?? ''); 
