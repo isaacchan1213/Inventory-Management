@@ -14,9 +14,11 @@ export default function Home() {
     const [open3, setOpen3] = useState(false)
     const [itemName, setItemName] = useState('')
     const [initCalories, setInitCalories] = useState([])
-    const [itemCalorie, setItemCalorie] = useState([])
     const [initTargetCal, setInitTargetCal] = useState([])
     const [targetCal, setTargetCal] = useState([])
+    const [initProteins, setInitProteins] = useState('')
+    const [initTargetProtein, setInitTargetProtein] = useState([])
+    const [targetProtein, setTargetProtein] = useState([])
     const [inputValue, setInputValue] = useState('') 
     const [loading, setLoading] = useState(true);
     const router = useRouter(); // Router instance for redirection
@@ -28,6 +30,7 @@ export default function Home() {
         } else {
           updateInventory(); // Fetch data if user is authenticated
           fetchTargetCalorie(); // Fetch target calorie if user is authenticated
+          fetchTargetProtein();
           setLoading(false); // Set loading to false when done
         }
       });
@@ -71,13 +74,51 @@ export default function Home() {
       }
     }
 
+    const fetchTargetProtein = async () => {
+      const userId = auth.currentUser?.uid;
+      if (!userId) {
+        console.log("User not authenticated");
+        return;
+      }
+
+      try {
+        console.log("i run")
+        const docRef = doc(firestore, `users/${userId}/settings`, 'proteinTarget');
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log('Document found:', docSnap.data());
+          setTargetProtein(docSnap.data().target);
+        } else {
+          setTargetProtein(0);
+          console.log('No target calorie data found.');
+        }
+      } catch (error) {
+        console.error('Error fetching target protein:', error);
+      }
+    };
+    
+    const addTargetProtein = async (targetProtein) => {
+      const userId = auth.currentUser?.uid; // Get the current user ID
+      if (!userId) return; // Exit if no user is authenticated
+
+      try {
+        const docRef = doc(collection(firestore, `users/${userId}/settings`), 'proteinTarget')
+        await setDoc(docRef, {target: Number(targetProtein)})
+      } catch(error) {
+        console.error('Error inserting target proteins:', error);
+      }
+    }
+
     const resetTarget = async () => {
       const userId = auth.currentUser?.uid; // Get the current user ID
       if (!userId) return; // Exit if no user is authenticated
 
       try {
         const docRef = doc(collection(firestore, `users/${userId}/settings`), 'calorieTarget')
+        const docRef2 = doc(collection(firestore, `users/${userId}/settings`), 'calorieProtein')
         await deleteDoc(docRef)
+        await deleteDoc(docRef2)
 
       } catch(error) {
         console.error('Error resetting target calories:', error);
@@ -104,7 +145,7 @@ export default function Home() {
       }
     }
 
-    const addInitItem = async (item, cals) => {
+    const addInitItem = async (item, cals, protein) => {
       console.log(cals)
       const userId = auth.currentUser?.uid; // Get the current user ID
       if (!userId) return; // Exit if no user is authenticated
@@ -117,31 +158,11 @@ export default function Home() {
             const quantity = docSnap.data().quantity
             const totalCalories = Number(docSnap.data().totalCalories)
             const itemCalories = Number(docSnap.data().itemCalories)
-            await setDoc(docRef, {quantity: quantity + 1, itemCalories: Number(cals), totalCalories: totalCalories + itemCalories})
+            const totalProtein = Number(docSnap.data().totalProtein)
+            const itemProtein = Number(docSnap.data().itemProtein)
+            await setDoc(docRef, {quantity: quantity + 1, itemCalories: Number(cals), totalCalories: totalCalories + itemCalories, itemProtein: Number(protein), totalProtein: totalProtein + itemProtein,})
           } else {
-            await setDoc(docRef, {quantity: 1, itemCalories: Number(cals), totalCalories: Number(cals)})
-          }
-          await updateInventory()
-      } catch(error) {
-        console.error('Error adding item or updating cals:', error);
-      }
-    }
-
-    const addItem = async (item) => {
-      const userId = auth.currentUser?.uid; // Get the current user ID
-      if (!userId) return; // Exit if no user is authenticated
-
-      try {
-        const docRef = doc(collection(firestore, `users/${userId}/inventory`), item)
-        const docSnap = await getDoc(docRef)
-
-        if (docSnap.exists()) {
-            const quantity = docSnap.data().quantity
-            const totalCalories = Number(docSnap.data().totalCalories)
-            const itemCalories = Number(docSnap.data().itemCalories)
-            await setDoc(docRef, {quantity: quantity + 1, itemCalories: itemCalories, totalCalories: totalCalories + itemCalories})
-          } else {
-            console.error('Item does not exist. Initialize the item first.');
+            await setDoc(docRef, {quantity: 1, itemCalories: Number(cals), totalCalories: Number(cals), itemProtein: Number(protein), totalProtein: Number(protein)})
           }
           await updateInventory()
       } catch(error) {
@@ -161,10 +182,12 @@ export default function Home() {
           const quantity = docSnap.data().quantity
           const totalCalories = Number(docSnap.data().totalCalories)
           const itemCalories = Number(docSnap.data().itemCalories)
+          const totalProtein = Number(docSnap.data().totalProtein)
+          const itemProtein = Number(docSnap.data().itemProtein)
           if (quantity === 1) {
             await deleteDoc(docRef) 
           } else {
-            await setDoc(docRef, {quantity: quantity - 1, itemCalories: itemCalories, totalCalories: totalCalories - itemCalories})
+            await setDoc(docRef, {quantity: quantity - 1, itemCalories: itemCalories, totalCalories: totalCalories - itemCalories, itemProtein: itemProtein, totalProtein: totalProtein - itemProtein})
           }
         }
         await updateInventory()
@@ -209,16 +232,18 @@ export default function Home() {
 
     useEffect(() => {
       fetchTargetCalorie()
+      fetchTargetProtein()
       updateInventory()
     }, [])
 
     useEffect(() => {
       if (loading) return; // Do nothing if still loading
 
-      if (targetCal === 0) {
+      if (targetCal === 0 || targetProtein === 0) {
         handleOpen3(); // Open settings modal if no target calorie is set
+        setOpen2(false);
       }
-    }, [targetCal, loading]);
+    }, [targetCal, targetProtein, loading]);
 
     const handleInputChange = (event, newInputValue) => {
       setInputValue(newInputValue);
@@ -229,6 +254,8 @@ export default function Home() {
     );
 
     const totalCalories = filteredInventory.reduce((sum, item) => sum + item.totalCalories, 0);
+
+    const totalProtein = filteredInventory.reduce((sum, item) => sum + item.totalProtein, 0);
     
     const progressPercentage = targetCal > 0 
     ? ((totalCalories/targetCal)*100)
@@ -243,14 +270,32 @@ export default function Home() {
     const handleOpen3 = () => setOpen3(true);
     const handleClose3 = () => setOpen3(false);
 
+    useEffect(() => {
+      console.log("Updated target cal", targetCal);
+      console.log("Updated target protein", targetProtein);
+      console.log("Updated target init cal", initTargetCal);
+      console.log("Updated target init protein", initTargetProtein);
+    }, [targetCal, targetProtein, initTargetCal, initTargetProtein]);
+    
+
     const getAISuggestion = async () => {
       try {
           const response = await axios.post('https://meal-prep-ten.vercel.app/api/get-calories', {
               food: itemName
           });
+          const response2 = await axios.post('https://meal-prep-ten.vercel.app/api/get-calories', {
+            food: itemName
+        });
           setInitCalories(response.data.response || ''); 
+          setInitProteins(response2.data.response || '');
       } catch (error) {
-          console.error(error.response.data);
+        if (error.response) {
+          // Log error response data
+          console.error(error.response.data || 'No response data available');
+        } else {
+          // Log other types of errors
+          console.error(error.message || 'An unknown error occurred');
+        }
       }
     };
     
@@ -284,7 +329,7 @@ export default function Home() {
                   onChange={(e) => setItemName(e.target.value)}
                   placeholder='Food Name'
                   maxLength={30}
-                  className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
+                  className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[55%]"
                 />
                 <style>
                   {`
@@ -305,7 +350,6 @@ export default function Home() {
                   onChange={(e) => { const value = e.target.value;
                     if (value.length <= 5) { 
                       setInitCalories(value);
-                      setItemCalorie(value);
                     }
                   }}
                   placeholder='Calories'
@@ -314,11 +358,26 @@ export default function Home() {
                   min="0"
                   step="1"
                 />
+                <input
+                  type="number"
+                  value={initProteins}
+                  onChange={(e) => { const value = e.target.value;
+                    if (value.length <= 3) { 
+                      setInitProteins(value);
+                    }
+                  }}
+                  placeholder='Protein'
+                  className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[20%]"
+                  inputMode="numeric"
+                  min="0"
+                  step="1"
+                />
                 <button
                   onClick={() => {
-                    addInitItem(itemName, initCalories);
-                    setItemName('');
+                    addInitItem(itemName, initCalories, initProteins);
+                    setItemName('')
                     setInitCalories('')
+                    setInitProteins('')
                     handleClose();
                   }}
                   className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
@@ -328,7 +387,7 @@ export default function Home() {
               </div>
               <p className="text-gray-600">{itemName.length}/{30} characters</p>
             </div>
-            <p>Don&apos;t know the calories?</p>
+            <p>Don&apos;t know the calories or protein?</p>
             <button
                   onClick={getAISuggestion} 
                   className="bg-green-600 text-white px-2 py-2 rounded border border-transparent hover:shadow-m hover:bg-green-700"
@@ -351,54 +410,76 @@ export default function Home() {
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
               <h2 className="text-lg font-semibold mb-4">Settings</h2>
-              <div className="flex gap-2 mb-4">
-                <style>
-                    {`
-                      input[type="number"]::-webkit-inner-spin-button,
-                      input[type="number"]::-webkit-outer-spin-button {
-                        -webkit-appearance: none;
-                        margin: 0;
-                      }
+              <div className="flex flex-row gap-2 mb-4">
+                <div className='flex flex-col gap-2'>
+                  <style>
+                      {`
+                        input[type="number"]::-webkit-inner-spin-button,
+                        input[type="number"]::-webkit-outer-spin-button {
+                          -webkit-appearance: none;
+                          margin: 0;
+                        }
 
-                      input[type="number"] {
-                        -moz-appearance: textfield;
-                      }
-                    `}
-                </style>
-                <input
-                    type="number"
-                    value={initTargetCal}
-                    onChange={(e) => { const value = e.target.value;
-                      if (value.length <= 5) { 
-                        setInitTargetCal(value)
-                      }
+                        input[type="number"] {
+                          -moz-appearance: textfield;
+                        }
+                      `}
+                  </style>
+                  <input
+                      type="number"
+                      value={initTargetCal}
+                      onChange={(e) => { const value = e.target.value;
+                        if (value.length <= 5) { 
+                          setInitTargetCal(value)
+                        }
+                      }}
+                      placeholder='Target Calories'
+                      className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      inputMode="numeric"
+                      min="0"
+                      step="1"
+                  />
+                  <input
+                      type="number"
+                      value={initTargetProtein}
+                      onChange={(e) => { const value = e.target.value;
+                        if (value.length <= 3) { 
+                          setInitTargetProtein(value)
+                        }
+                      }}
+                      placeholder='Target Protein'
+                      className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      inputMode="numeric"
+                      min="0"
+                      step="1"
+                  />
+                </div>
+                <div className='flex flex-row gap-2 items-center'>
+                  <button
+                    onClick={() => {
+                      addTargetCal(initTargetCal)
+                      setTargetCal(initTargetCal)
+                      addTargetProtein(initTargetProtein)
+                      setTargetProtein(initTargetProtein)
+                      handleClose2();
                     }}
-                    placeholder='Target Calories'
-                    className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
-                    inputMode="numeric"
-                    min="0"
-                    step="1"
-                />
-                <button
-                  onClick={() => {
-                    addTargetCal(initTargetCal);
-                    setTargetCal(initTargetCal)
-                    handleClose2();
-                  }}
-                  className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
-                >
-                  Set
-                </button>
-                <button
-                  onClick={() => {
-                    resetTarget();
-                    setInitTargetCal('')
-                    setTargetCal('')
-                  }}
-                  className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
-                >
-                  Reset
-                </button>
+                    className="bg-blue-600 text-white px-4 py-2 h-[50%] rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+                  >
+                    Set
+                  </button>
+                  <button
+                    onClick={() => {
+                      resetTarget()
+                      setInitTargetCal('')
+                      setTargetCal(0)
+                      setInitTargetProtein('')
+                      setTargetProtein(0)
+                    }}
+                    className="bg-blue-600 text-white px-3 py-2 h-[50%] rounded border border-transparent hover:shadow-m hover:bg-blue-700"
+                  >
+                    Reset
+                  </button>
+                </div>
               </div>
               <button
                 onClick={handleClose2}
@@ -415,7 +496,7 @@ export default function Home() {
         {open3 && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white w-[400px] p-4 border border-gray-400 shadow-lg rounded-lg relative">
-              <h2 className="text-lg font-semibold mb-4">Please set your target calories first</h2>
+              <h2 className="text-lg font-semibold mb-4">Please set your target calories and protein first</h2>
               <div className="flex gap-2 mb-4">
                 <style>
                     {`
@@ -444,10 +525,26 @@ export default function Home() {
                     min="0"
                     step="1"
                 />
+                <input
+                    type="number"
+                    value={initTargetProtein}
+                    onChange={(e) => { const value = e.target.value;
+                      if (value.length <= 3) { 
+                        setInitTargetProtein(value)
+                      }
+                    }}
+                    placeholder='Target Protein'
+                    className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[75%]"
+                    inputMode="numeric"
+                    min="0"
+                    step="1"
+                />
                 <button
                   onClick={() => {
-                    addTargetCal(initTargetCal);
+                    addTargetCal(initTargetCal)
                     setTargetCal(initTargetCal)
+                    addTargetProtein(initTargetProtein)
+                    setTargetProtein(initTargetProtein)
                     handleClose3();
                   }}
                   className="bg-blue-600 text-white px-4 py-2 rounded border border-transparent hover:shadow-m hover:bg-blue-700"
@@ -516,19 +613,19 @@ export default function Home() {
               </h2>
             </div>
             <div className='flex-1 overflow-y-auto flex flex-col gap-2 lg:gap-4 rounded-md'> 
-              {filteredInventory.map(({name, quantity, totalCalories}) => (
+              {filteredInventory.map(({name, quantity, totalCalories, totalProtein, itemCalories, itemProtein}) => (
                 <div key={name} className='w-full flex items-center justify-between bg-[#f0f0f0] px-4 py-10'>
                   <div className='flex-shrink-0 max-w-[30%]'>
                     <h3 className='text-[#333] text-[25px] md:text-[25px] lg:text-[30px] xl:text-[40px] whitespace-normal break-words'>
                       {quantity === 1 ? name.charAt(0).toUpperCase() + name.slice(1) + ':' : quantity + ' ' + name.charAt(0).toUpperCase() + name.slice(1) + ':'}
                     </h3>    
                   </div>   
-                  <div className='text-[#333] text-[25px] md:text-[25px] lg:text-[40px] text-center w-full'>
-                    {totalCalories + ' cals'}
+                  <div className='text-[#333] text-[25px] md:text-[25px] lg:text-[40px] text-center w-full '>
+                    {totalCalories + ' cals' + ' ' + totalProtein + 'g'}
                   </div>
                   <div className='flex flex-col md:flex-row gap-2'>
                       <button className='bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={() => {
-                        addItem(name)
+                        addInitItem(name, itemCalories, itemProtein)
                       }}>
                         Add
                       </button>
@@ -543,32 +640,60 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className='hidden md:flex flex-col items-center gap-1'>
-          <div className='relative w-[350px] h-[150px] lg:w-[400px] md:h-[200px]'>
-            <div
-              role="progressbar"
-              aria-valuenow={progressPercentage}
-              aria-valuemin="0"
-              aria-valuemax="100"
-              style={{ '--value': progressPercentage }}
-              className="absolute top-0 left-0 w-full h-full" 
-            />
-            <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
-              {targetCal > 0 ? (
-                <div className='text-xl font-bold text-[#333]'>
-                  {totalCalories}/{targetCal}
-                </div>
-              ) : (
-                <div className='text-xl font-bold text-[#333]'>
-                  Input target calorie
-                </div>
-              )}
+        <div className='flex flex-col gap-4'>
+          <div className='hidden md:flex flex-col items-center gap-1'>
+            <div className='relative w-[350px] h-[150px] lg:w-[400px] md:h-[200px]'>
+              <div
+                role="progressbar"
+                aria-valuenow={progressPercentage}
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style={{ '--value': progressPercentage }}
+                className="absolute top-0 left-0 w-full h-full" 
+              />
+              <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
+                {targetCal > 0 ? (
+                  <div className='text-xl font-bold text-[#333]'>
+                    {totalCalories}/{targetCal}
+                  </div>
+                ) : (
+                  <div className='text-xl font-bold text-[#333]'>
+                    Input target calorie
+                  </div>
+                )}
+              </div>
             </div>
+            <h2 className='font-semibold text-[35px]'>
+              Calories
+            </h2>
           </div>
-          <h2 className='font-semibold text-[35px]'>
-            Progress
-          </h2>
-      </div>
+          <div className='hidden md:flex flex-col items-center gap-1'>
+            <div className='relative w-[350px] h-[150px] lg:w-[400px] md:h-[200px]'>
+              <div
+                role="progressbar"
+                aria-valuenow={progressPercentage}
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style={{ '--value': progressPercentage }}
+                className="absolute top-0 left-0 w-full h-full" 
+              />
+              <div className='absolute inset-0 flex items-center justify-center top-[30%]'>
+                {targetProtein > 0 ? (
+                  <div className='text-xl font-bold text-[#333]'>
+                    {totalProtein}/{targetProtein}
+                  </div>
+                ) : (
+                  <div className='text-xl font-bold text-[#333]'>
+                    Input target protein
+                  </div>
+                )}
+              </div>
+            </div>
+            <h2 className='font-semibold text-[35px]'>
+              Protein
+            </h2>
+          </div>
+        </div>
     </div>
   </div>
 )}
