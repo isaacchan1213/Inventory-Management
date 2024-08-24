@@ -589,8 +589,8 @@ export default function Home() {
         />
       </div>
 
-      <div className='w-full h-full xl:w-[1280px] flex flex-col-reverse md:flex-row justify-center items-center gap-5 lg:gap-10'>
-        <div className='w-[80%] h-full md:w-full flex flex-col gap-2'>
+      <div className='w-full h-[70%] xl:w-[1280px] flex flex-col-reverse md:flex-row justify-center items-center gap-5 lg:gap-10'>
+        <div className='w-[80%] md:w-full flex flex-col gap-2'>
           <div className='flex justify-center items-center gap-2 md:hidden'>
             <div className='relative w-[150px] h-[75px] xs:w-[200px] xs:h-[100px]'>
               <div
