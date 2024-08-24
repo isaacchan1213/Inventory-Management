@@ -1,5 +1,5 @@
 "use client"
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Link from 'next/link'
 import {auth} from '@/firebase';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
@@ -9,6 +9,14 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const router = useRouter();
+
+  useEffect(() => {
+    document.querySelector("#login-wrapper").classList.add("fixed-login");
+
+    return () => {
+      document.querySelector("#login-wrapper").classList.remove("fixed-login");
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -39,27 +47,29 @@ const Login = () => {
   }
 
   return (
-    <div className='flex flex-col justify-center items-center w-screen h-screen gap-2 overscroll-y-none overflow-hidden'>
-      <h1 className='text-[24px] font-semibold'>Mindful Meals</h1>
-      <p className='text-center'>Start monitoring your daily meals now!</p>
-      <div className='flex flex-col justify-center items-center w-full h-full max-w-[500px] max-h-[300px] border bg-white'>
-        <form onSubmit={handleSubmit} className='w-full h-full max-w-[400px] max-h-[200px] flex flex-col gap-4'>
-          <div className='email'>
-            <p>Your email</p>
-            <input className='border border-gray-600 w-full h-[40px] rounded-sm p-2' type='text' onChange={(e) => setEmail(e.target.value)} placeholder='e.g. example@gmail.com'></input>
-          </div>
-          <div className='password'>
-            <p>Your password</p>
-            <input className='border border-gray-600 w-full h-[40px] rounded-sm p-2' type='password' onChange={(e) => setPassword(e.target.value)} placeholder='e.g. 12341234'></input>
-          </div>
-          <div className='flex flex-col items-center'>
-            <button type='submit' className='w-[60%] h-[40px] bg-green-500 rounded-lg text-white'>Log In</button>
-          </div>
-          <div className='flex flex-row justify-center gap-8 text-xs'>
-            <Link className='text-blue-500 underline' href='/signup'>Don&apos;t have an account?</Link>
-            <a onClick={handlePasswordReset} href="#" className='text-blue-500 underline'>Forgot your password?</a>
-          </div>
-        </form>
+    <div id="login-wrapper" className="fixed-login">
+      <div className='flex flex-col justify-center items-center w-screen h-screen gap-2 overscroll-y-none overflow-hidden'>
+            <h1 className='text-[24px] font-semibold'>Mindful Meals</h1>
+            <p className='text-center'>Start monitoring your daily meals now!</p>
+            <div className='flex flex-col justify-center items-center w-full h-full max-w-[500px] max-h-[300px] border bg-white'>
+              <form onSubmit={handleSubmit} className='w-full h-full max-w-[400px] max-h-[200px] flex flex-col gap-4'>
+                <div className='email'>
+                  <p>Your email</p>
+                  <input className='border border-gray-600 w-full h-[40px] rounded-sm p-2' type='text' onChange={(e) => setEmail(e.target.value)} placeholder='e.g. example@gmail.com'></input>
+                </div>
+                <div className='password'>
+                  <p>Your password</p>
+                  <input className='border border-gray-600 w-full h-[40px] rounded-sm p-2' type='password' onChange={(e) => setPassword(e.target.value)} placeholder='e.g. 12341234'></input>
+                </div>
+                <div className='flex flex-col items-center'>
+                  <button type='submit' className='w-[60%] h-[40px] bg-green-500 rounded-lg text-white'>Log In</button>
+                </div>
+                <div className='flex flex-row justify-center gap-8 text-xs'>
+                  <Link className='text-blue-500 underline' href='/signup'>Don&apos;t have an account?</Link>
+                  <a onClick={handlePasswordReset} href="#" className='text-blue-500 underline'>Forgot your password?</a>
+                </div>
+              </form>
+            </div>
       </div>
     </div>
   )
