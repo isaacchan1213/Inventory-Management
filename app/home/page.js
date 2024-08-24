@@ -281,7 +281,6 @@ export default function Home() {
       console.log("Updated target init protein", initTargetProtein);
     }, [targetCal, targetProtein, initTargetCal, initTargetProtein]);
     
-
     const getAISuggestion = async () => {
       try {
           const response = await axios.post('https://meal-prep-ten.vercel.app/api/get-calories', {
@@ -289,9 +288,9 @@ export default function Home() {
           });
           const response2 = await axios.post('https://meal-prep-ten.vercel.app/api/get-protein', {
             food: itemName
-        });
-          setInitCalories(response.data.response || ''); 
-          setInitProteins(response2.data.response || '');
+          });
+          setInitCalories(Number(response.data.response) ?? ''); 
+          setInitProteins(Number(response2.data.response) ?? '');
       } catch (error) {
         if (error.response) {
           // Log error response data
@@ -399,7 +398,12 @@ export default function Home() {
                   Get AI Suggestion
             </button>
             <button
-              onClick={handleClose}
+              onClick={() => {
+                setItemName('')
+                setInitCalories('')
+                setInitProteins('')
+                handleClose();
+              }}
               className="bg-red-500 text-white w-full mt-2 rounded hover:shadow-m hover:bg-red-700"
             >
               Close
