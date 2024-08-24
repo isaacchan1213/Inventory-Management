@@ -39,7 +39,7 @@ const Login = () => {
   }
 
   return (
-    <div className='flex flex-col justify-center items-center w-screen h-screen gap-2 overscroll-none'>
+    <div className='flex flex-col justify-center items-center w-screen h-screen gap-2 overscroll-y-none overflow-hidden'>
       <h1 className='text-[24px] font-semibold'>Mindful Meals</h1>
       <p className='text-center'>Start monitoring your daily meals now!</p>
       <div className='flex flex-col justify-center items-center w-full h-full max-w-[500px] max-h-[300px] border bg-white'>
