@@ -20,11 +20,16 @@ module.exports = {
       },
       animation: {
         progress: 'progress 2s 0.5s forwards',
+        spinner: 'spinner 4s linear infinite',  
       },
       keyframes: {
         progress: {
           '0%': { '--percentage': '0' },
           '100%': { '--percentage': 'var(--value)' },
+        },
+        spinner: {
+          '0%': { transform: 'rotate(0deg)' },  
+          '100%': { transform: 'rotate(360deg)' },
         },
       },
       screens: {

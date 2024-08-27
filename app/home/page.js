@@ -21,6 +21,7 @@ export default function Home() {
     const [targetProtein, setTargetProtein] = useState([])
     const [inputValue, setInputValue] = useState('') 
     const [loading, setLoading] = useState(true);
+    const [loadingAI, setLoadingAI] = useState(false);
     const router = useRouter(); // Router instance for redirection
 
     useEffect(() => {
@@ -282,6 +283,7 @@ export default function Home() {
     }, [targetCal, targetProtein, initTargetCal, initTargetProtein]);
     
     const getAISuggestion = async () => {
+      setLoadingAI(true);
       try {
           const response = await axios.post('https://mindful-meals.vercel.app/api/get-calories', {
               food: itemName
@@ -299,6 +301,8 @@ export default function Home() {
           // Log other types of errors
           console.error(error.message || 'An unknown error occurred');
         }
+      } finally {
+        setLoadingAI(false);
       }
     };
     
@@ -391,12 +395,17 @@ export default function Home() {
               <p className="text-gray-600">{itemName.length}/{30} characters</p>
             </div>
             <p>Don&apos;t know the calories or protein?</p>
-            <button
-                  onClick={getAISuggestion} 
-                  className="bg-green-600 text-white px-2 py-2 rounded border border-transparent hover:shadow-m hover:bg-green-700"
-              >
-                  Get AI Suggestion
-            </button>
+            <div className='flex flex-row gap-2 items-center'>
+              <button
+                    onClick={getAISuggestion} 
+                    className="bg-green-600 text-white px-2 py-2 rounded border border-transparent hover:shadow-m hover:bg-green-700"
+                >
+                    Get AI Suggestion
+              </button>
+              {loadingAI && (
+                      <div className='w-[25px] h-[25px] border-[3px] border-solid border-[#EAF0F6] border-t-[#A1F879] rounded-full animate-spin'/>
+              )}
+            </div>
             <button
               onClick={() => {
                 setItemName('')
