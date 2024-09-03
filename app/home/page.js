@@ -577,8 +577,8 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      <div className='flex flex-col items-center md:flex-row gap-2 justify-center mb-5'>
+      
+      <div className='flex flex-col items-center md:flex-row gap-2 justify-center mb-10'>
         <div className='flex flex-row gap-2 h-full'>
           <button className='rounded bg-blue-600 px-4 py-2 text-lg text-white hover:shadow-xl hover:bg-blue-700' onClick={() => {
             handleOpen()
