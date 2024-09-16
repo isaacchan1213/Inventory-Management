@@ -1,6 +1,6 @@
 # Mindful Meals
 
-Mindful Meals is a full-stack web application designed to monitor and provide AI-driven estimations of your daily protein and caloric intake based on the meals you consume.
+[Mindful Meals](mindfulmeals.vercel.app/) is a full-stack web application designed to monitor and provide AI-driven estimations of your daily protein and caloric intake based on the meals you consume.
 
 ## Tech Stack
 
